@@ -1,6 +1,0 @@
-[submodule "depends/uniswap-contracts"]
-	path = depends/uniswap-contracts
-	url = https://github.com/Uniswap/contracts-vyper.git
-[submodule "depends/uniswap-frontend"]
-	path = depends/uniswap-frontend
-	url = https://github.com/Uniswap/uniswap-frontend.git
