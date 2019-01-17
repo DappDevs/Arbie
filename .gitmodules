@@ -4,3 +4,9 @@
 [submodule "depends/uniswap-frontend"]
 	path = depends/uniswap-frontend
 	url = https://github.com/Uniswap/uniswap-frontend.git
+[submodule "vyper-contracts"]
+	path = vyper-contracts
+	url = https://github.com/LayerXcom/verified-vyper-contracts
+[submodule "depends/vyper-contracts"]
+	path = depends/vyper-contracts
+	url = https://github.com/LayerXcom/verified-vyper-contracts
