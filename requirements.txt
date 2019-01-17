@@ -1,2 +1,4 @@
-requests
+ipython
+pyqrcode
 web3
+vyper
