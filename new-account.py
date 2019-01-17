@@ -13,7 +13,7 @@ print("Please only send testnet ETH to this account:", account.address)
 qr = pyqrcode.create(account.address)
 print(qr.terminal(quiet_zone=2))
 
-print("Rinkeby Testnet Faucet:", "https://faucet.rinkeby.io/")
+print("Ropsten Testnet Faucet:", "https://faucet.metamask.io/")
 print()
 
 # Encrypt the key with a good passphrase!
