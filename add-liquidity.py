@@ -6,7 +6,7 @@ from vypercoin import interface as token_interface
 import uniswap
 
 
-# NOTE With 1m Tokens, 20% invested (200k) at price of 0.00001 ETH/Token
+# NOTE With 1m Tokens, 20% invested (200k) at price of 10k Tokens/ETH
 #      is 2 ETH liquidity. Therefore, everyone should have at least 2 ETH.
 
 @click.command()
@@ -16,9 +16,9 @@ import uniswap
         default=0.20,
         help="Percentage of token holdings to invest as market maker.")
 @click.option('--price',
-        type=click.FloatRange(1e-6, 0.001),
-        default=1e-5,
-        help="Price to set (if exchange not created). Ether balances must be GEQ price*tokens.")
+        type=click.IntRange(1e3, 1e6),
+        default=10000,
+        help="Price to set, tokens per ETH (if exchange not created). Ether balances must be GEQ price*tokens.")
 def add_liquidity(token_address, percent_investment, price):
     """
     Add liquidity to the Uniswap exchcange for the given token
@@ -49,7 +49,17 @@ def add_liquidity(token_address, percent_investment, price):
     token = dev.w3.eth.contract(token_address, **token_interface)
     exchange = dev.w3.eth.contract(exchange_address, **uniswap.exchange_interface)
 
-    # First, approve exchange to transfer tokens on our behalf
+    # First, calculate how much we're going to put into the pool
+    tokens_to_deposit = int(percent_investment * token.functions.balanceOf(dev.address).call())
+    ether_to_deposit = dev.w3.toWei(tokens_to_deposit / price, 'ether')  # 10**18 wei == 1 ether
+    assert ether_to_deposit <= dev.w3.eth.getBalance(dev.address), \
+            "You don't have {} ETH!".format(dev.w3.fromWei(ether_to_deposit, 'ether'))
+    click.echo("Depositing {1} Tokens, {2} ETH @ {0} ETH/Token".format(
+            1/price, tokens_to_deposit, dev.w3.fromWei(ether_to_deposit, 'ether')
+        ))
+
+    # Don't forget to approve the Exchange to move tokens on our behalf
+
 
     # Finally, add liquidity (ETH + Tokens) to contract
 
