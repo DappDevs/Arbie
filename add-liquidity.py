@@ -50,7 +50,16 @@ def add_liquidity(token_address, percent_investment, price):
     token = dev.w3.eth.contract(token_address, **token_interface)
     exchange = dev.w3.eth.contract(exchange_address, **uniswap.exchange_interface)
 
-    # First, calculate how much we're going to put into the pool
+    # If the exchange has minted some liquidity tokens
+    if exchange.functions.totalSupply().call() > 0:
+        # Someone else has already provided liquidity, so the price is already set
+        old_price = price
+        price = token.functions.balanceOf(exchange.address).call() \
+                / dev.w3.fromWei(dev.w3.eth.getBalance(exchange.address), 'ether')
+        if old_price != price:
+            click.echo("Exchange has liquidity, price was changed from {} to {} [Tokens/ETH]".format(old_price, price))
+
+    # Then, calculate how much we're going to put into the pool
     tokens_to_deposit = int(percent_investment * token.functions.balanceOf(dev.address).call())
     ether_to_deposit = dev.w3.toWei(tokens_to_deposit / price, 'ether')  # 10**18 wei == 1 ether
     assert ether_to_deposit <= dev.w3.eth.getBalance(dev.address), \
