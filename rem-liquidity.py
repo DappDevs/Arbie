@@ -11,7 +11,7 @@ import uniswap
 @click.argument('token-address', type=str)
 @click.option('--percent-liquidity',
         type=click.FloatRange(0.01, 1.00),
-        default=0.20,
+        default=1.00,
         help="Percentage of liquidity to withdraw.")
 def rem_liquidity(token_address, percent_liquidity):
     """
