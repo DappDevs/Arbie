@@ -1,7 +1,7 @@
 import click
-import vyper
 
 from eth_dev import DeveloperAccount
+from vypercoin import interface as token_interface
 
 
 @click.command()
@@ -27,14 +27,6 @@ def deploy_token(name, symbol, decimals, initial_supply):
 
     NOTE: Do not add personally identifiable information, as it can not be erased!
     """
-
-    # Compile the token
-    with open('Token.vy', 'r') as f:
-        token_interface = vyper.compile_code(
-                f.read(),
-                output_formats=['abi', 'bytecode', 'bytecode_runtime'],
-            )
-
     # Load developer account
     dev = DeveloperAccount('./.your.keys')
 
