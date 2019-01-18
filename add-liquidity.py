@@ -22,7 +22,7 @@ import uniswap
         help="Price to set, tokens per ETH (if exchange not created). Ether balances must be GEQ price*tokens.")
 def add_liquidity(token_address, percent_investment, price):
     """
-    Add liquidity to the Uniswap exchcange for the given token
+    Add liquidity to the Uniswap exchange for the given token
 
     NOTE Will create exchange if it doesn't exist!
     """
