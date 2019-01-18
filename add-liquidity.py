@@ -36,15 +36,15 @@ def add_liquidity(token_address, percent_investment, price):
     exchange_address = factory.functions.getExchange(token_address).call()
     if exchange_address == '0x0000000000000000000000000000000000000000':
         # No exchange, so create one!
-        if click.confirm("No exchange for {}, create one?".format(token_address)):
-            exchange_address = factory.functions.createExchange(token_address).call()
-            txn_hash = factory.functions.createExchange(token_address).transact({'from':dev.address})
-            click.echo("Creating exchange... (https://ropsten.etherscan.io/tx/{})".format(txn_hash.hex()))
-            dev.w3.eth.waitForTransactionReceipt(txn_hash)  # Just wait...
-            assert exchange_address == factory.functions.getExchange(token_address).call()
-            click.echo("Exchange created! (https://ropsten.etherscan.io/address/{})".format(exchange_address))
-        else:
+        if not click.confirm("No exchange for {}, create one?".format(token_address)):
             return  # Abort!
+        exchange_address = factory.functions.createExchange(token_address).call()
+        txn_hash = factory.functions.createExchange(token_address).transact({'from':dev.address})
+        click.echo("Creating exchange... (https://ropsten.etherscan.io/tx/{})".format(txn_hash.hex()))
+        dev.w3.eth.waitForTransactionReceipt(txn_hash)  # Just wait...
+        assert exchange_address == factory.functions.getExchange(token_address).call(), \
+                "There was an error with creating the exchange!"
+        click.echo("Exchange created! (https://ropsten.etherscan.io/address/{})".format(exchange_address))
 
     # Now we can create our contract classes
     token = dev.w3.eth.contract(token_address, **token_interface)
