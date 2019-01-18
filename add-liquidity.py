@@ -72,6 +72,7 @@ def add_liquidity(token_address, percent_investment, price):
         txn_hash = token.functions.approve(exchange.address, tokens_to_deposit).transact({'from':dev.address})
         click.echo("Approving tokens for exchange... (https://ropsten.etherscan.io/tx/{})".format(txn_hash.hex()))
         dev.w3.eth.waitForTransactionReceipt(txn_hash)  # Wait here...
+    click.echo("Allowance is {} [Tokens]".format(token.functions.allowance(dev.address, exchange.address).call()))
 
     # Finally, add liquidity (ETH + Tokens) to contract
     if not click.confirm("Deposit {1} [Tokens], {2} [ETH] (@ {0} [Tokens/ETH])?".format(
