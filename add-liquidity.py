@@ -63,17 +63,19 @@ def add_liquidity(token_address, percent_investment, price):
     tokens_to_deposit = int(percent_investment * token.functions.balanceOf(dev.address).call())
     ether_to_deposit = dev.w3.toWei(tokens_to_deposit / price, 'ether')  # 10**18 wei == 1 ether
     assert ether_to_deposit <= dev.w3.eth.getBalance(dev.address), \
-            "You don't have {} ETH!".format(dev.w3.fromWei(ether_to_deposit, 'ether'))
+            "You don't have {} [ETH]!".format(dev.w3.fromWei(ether_to_deposit, 'ether'))
 
     # Don't forget to approve the Exchange to move tokens on our behalf
     if token.functions.allowance(dev.address, exchange.address).call() < tokens_to_deposit:
+        if not click.confirm("Approve {} [Tokens] for exchange?".format(tokens_to_deposit)):
+            return  # Abort!
         txn_hash = token.functions.approve(exchange.address, tokens_to_deposit).transact({'from':dev.address})
-        click.echo("Approve tokens for exchange... (https://ropsten.etherscan.io/tx/{})".format(txn_hash.hex()))
+        click.echo("Approving tokens for exchange... (https://ropsten.etherscan.io/tx/{})".format(txn_hash.hex()))
         dev.w3.eth.waitForTransactionReceipt(txn_hash)  # Wait here...
 
     # Finally, add liquidity (ETH + Tokens) to contract
-    if click.confirm("Deposit {1} Tokens, {2} ETH (@ {0} ETH/Token)?".format(
-        1/price, tokens_to_deposit, dev.w3.fromWei(ether_to_deposit, 'ether')
+    if not click.confirm("Deposit {1} [Tokens], {2} [ETH] (@ {0} [Tokens/ETH])?".format(
+        price, tokens_to_deposit, dev.w3.fromWei(ether_to_deposit, 'ether')
     )):
         txn_hash = exchange.functions.addLiquidity(
                 tokens_to_deposit * ether_to_deposit,  # min liquidity
