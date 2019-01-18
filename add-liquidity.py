@@ -1,4 +1,5 @@
 import click
+import time
 
 from eth_dev import DeveloperAccount
 from vypercoin import interface as token_interface
@@ -54,9 +55,6 @@ def add_liquidity(token_address, percent_investment, price):
     ether_to_deposit = dev.w3.toWei(tokens_to_deposit / price, 'ether')  # 10**18 wei == 1 ether
     assert ether_to_deposit <= dev.w3.eth.getBalance(dev.address), \
             "You don't have {} ETH!".format(dev.w3.fromWei(ether_to_deposit, 'ether'))
-    click.echo("Depositing {1} Tokens, {2} ETH @ {0} ETH/Token".format(
-            1/price, tokens_to_deposit, dev.w3.fromWei(ether_to_deposit, 'ether')
-        ))
 
     # Don't forget to approve the Exchange to move tokens on our behalf
     if token.functions.allowance(dev.address, exchange.address).call() < tokens_to_deposit:
@@ -65,6 +63,17 @@ def add_liquidity(token_address, percent_investment, price):
         dev.w3.eth.waitForTransactionReceipt(txn_hash)  # Wait here...
 
     # Finally, add liquidity (ETH + Tokens) to contract
+    if click.confirm("Deposit {1} Tokens, {2} ETH (@ {0} ETH/Token)?".format(
+        1/price, tokens_to_deposit, dev.w3.fromWei(ether_to_deposit, 'ether')
+    )):
+        txn_hash = exchange.functions.addLiquidity(
+                tokens_to_deposit * ether_to_deposit,  # min liquidity
+                tokens_to_deposit,  # max tokens
+                int(time.time()) + 60 * 2,  # deadline (2 mins from now)
+            ).transact({'from': dev.address})
+        click.echo("Adding liquidity... (https://ropsten.etherscan.io/tx/{})".format(txn_hash.hex()))
+        dev.w3.eth.waitForTransactionReceipt(txn_hash)  # Wait here...
+        click.echo("Added liquidity!")
 
 if __name__ == '__main__':
     add_liquidity()
