@@ -11,8 +11,13 @@ class DeveloperAccount:
         with open(keyfile_path, 'r') as f:
             keyfile = json.loads(f.read())
 
-        password = getpass("Please Input Keyfile Password ({}): ".format(keyfile_path))
-        privateKey = Account.decrypt(keyfile, password)
+        privateKey = None
+        while not privateKey:
+            try:
+                password = getpass("Please Input Keyfile Password ({}): ".format(keyfile_path))
+                privateKey = Account.decrypt(keyfile, password)
+            except ValueError as e:
+                print("Wrong Password! Try again!")
 
         self._account = Account.privateKeyToAccount(privateKey)
         self.w3 = w3  # Access to Ethereum API thru Infura
