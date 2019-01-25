@@ -87,7 +87,7 @@ def add_liquidity(token_address, percent_investment, price):
             int(ether_to_deposit * 0.90),  # min liquidity (Accept 10% fluctation)
             tokens_to_deposit,  # max tokens
             int(time.time()) + 60 * 2,  # deadline (2 mins from now)
-            ).transact({'from': dev.address, 'value': ether_to_deposit})
+        ).transact({'from': dev.address, 'value': ether_to_deposit})
     click.echo("Adding liquidity... (https://ropsten.etherscan.io/tx/{})".format(txn_hash.hex()))
     dev.w3.eth.waitForTransactionReceipt(txn_hash)  # Wait here...
     click.echo("Added liquidity!")
