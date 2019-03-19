@@ -17,7 +17,7 @@ import uniswap
         default=0.20,
         help="Percentage of token holdings to invest as market maker.")
 @click.option('--price',
-        type=click.IntRange(1e3, 1e6),
+        type=click.IntRange(1, 1e6),
         default=10000,
         help="Price to set, tokens per ETH (if exchange not created). Ether balances must be GEQ price*tokens.")
 def add_liquidity(token_address, percent_investment, price):
