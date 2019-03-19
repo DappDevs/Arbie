@@ -15,7 +15,7 @@ from vypercoin import interface as token_interface
         help="Pick a short identifier, 3-4 letters long (all caps suggested)")
 @click.option('--decimals',
         type=click.IntRange(0, 18),
-        default=0,
+        default=18,
         help="Adjust the number of decimal places to display (Default is zero)")
 @click.option('--initial-supply',
         type=click.IntRange(0, 2**256-1),
@@ -32,7 +32,6 @@ def deploy_token(name, symbol, decimals, initial_supply):
 
     # Deploy with argument choices
     if click.confirm("Do you want to deploy the {0} token ({1})?".format(symbol, name)):
-        print(dev.w3.eth.blockNumber)
         txn_hash = dev.w3.eth.contract(**token_interface).constructor(
                 name.encode('utf-8'),
                 symbol.encode('utf-8'),
